@@ -19,4 +19,3 @@
 2. check_user_data.html - Template to show failed login state in case of unsuccessful login attempt.
 3. forgot_password.html - Template to let user enter email so that a new password can be sent. (This is just a placehlder template and has no functionality added to it)
 4. success.html - This is the final page where the user is greeted after successful login.
-
