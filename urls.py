@@ -1,15 +1,16 @@
 from click import password_option
-from flask import Flask, redirect, url_for, request, render_template
-from db import db
-
-app = Flask(__name__)
+from flask import redirect, url_for, request, render_template, flash
+from app import app, db
+from db import User
+from models import login_check
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///user_data.db"
 
 
 @app.route('/')
 def index():
-   return render_template('login.html')
+   form = login_check()
+   return render_template('login.html',form=form)
 
 @app.route('/forgot_password')
 def forgot_password():
@@ -18,16 +19,22 @@ def forgot_password():
 @app.route('/success/<name>')
 def success(name):
    return render_template('success.html',name = name)
-   #return 'welcome %s' % name
 
 @app.route('/login',methods = ['POST', 'GET'])
 def login():
-   if request.method == 'POST':
-      user = request.form['login']
-      return redirect(url_for('success',name = user))
-   else:
-      user = request.args.get('login')
-      return redirect(url_for('success',name = user))
+   form = login_check()
+   if form.validate_on_submit():
+      try:
+         user = User.query.filter_by(username=form.username.data).first()
+         if form.password.data == user.password:
+            return redirect(url_for('success',name = user.username))
+         else:
+            flash('Invalid Username or Password.', 'danger')
+      except Exception as e:
+         flash(e,'danger')
+   return render_template("check_user_data.html",form=form)
+
+
 
 if __name__ == '__main__':
    app.run(debug = True)
