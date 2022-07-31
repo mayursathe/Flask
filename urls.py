@@ -1,8 +1,9 @@
 from click import password_option
 from flask import redirect, url_for, request, render_template
-from app import app, db
+from app import app, db, bcrypt
 from db import User
 from models import login_check
+from flask_bcrypt import check_password_hash
 
 @app.route('/')
 def index():
@@ -25,13 +26,13 @@ def login():
       user = User.query.filter_by(username=form.username.data).first()
       if user == None:
          error = 'Invalid Username or Password.'
-      elif form.password.data == user.password:
+      elif check_password_hash(user.password, form.password.data):
+      #elif form.password.data == user.password:
          return redirect(url_for('success',name = user.username))
       else:
          error = 'Invalid Username or Password.'
 
    return render_template("check_user_data.html",form=form,error=error)
-
 
 
 if __name__ == '__main__':
