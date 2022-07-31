@@ -1,11 +1,8 @@
 from click import password_option
-from flask import redirect, url_for, request, render_template, flash
+from flask import redirect, url_for, request, render_template
 from app import app, db
 from db import User
 from models import login_check
-
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///user_data.db"
-
 
 @app.route('/')
 def index():
@@ -23,16 +20,17 @@ def success(name):
 @app.route('/login',methods = ['POST', 'GET'])
 def login():
    form = login_check()
+   error = None
    if form.validate_on_submit():
-      try:
-         user = User.query.filter_by(username=form.username.data).first()
-         if form.password.data == user.password:
-            return redirect(url_for('success',name = user.username))
-         else:
-            flash('Invalid Username or Password.', 'danger')
-      except Exception as e:
-         flash(e,'danger')
-   return render_template("check_user_data.html",form=form)
+      user = User.query.filter_by(username=form.username.data).first()
+      if user == None:
+         error = 'Invalid Username or Password.'
+      elif form.password.data == user.password:
+         return redirect(url_for('success',name = user.username))
+      else:
+         error = 'Invalid Username or Password.'
+
+   return render_template("check_user_data.html",form=form,error=error)
 
 
 
