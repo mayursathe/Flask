@@ -1,5 +1,11 @@
+from click import password_option
 from flask import Flask, redirect, url_for, request, render_template
+from db import db
+
 app = Flask(__name__)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///user_data.db"
+
 
 @app.route('/')
 def index():
