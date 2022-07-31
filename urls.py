@@ -1,4 +1,3 @@
-from click import password_option
 from flask import redirect, url_for, request, render_template, make_response
 from app import app, db, bcrypt, login_manager, COOKIE_TIME_OUT
 from db import User
